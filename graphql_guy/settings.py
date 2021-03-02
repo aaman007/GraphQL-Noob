@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     # Own Apps
     'books.apps.BooksConfig',
+    'quiz.apps.QuizConfig'
 ]
 
 MIDDLEWARE = [
