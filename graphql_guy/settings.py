@@ -25,7 +25,7 @@ SECRET_KEY = '8=#@buye+jjaz8c)&q$^=8^+$+t2fu5k47=z(+mlq#ve8++7ug'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -40,10 +40,14 @@ INSTALLED_APPS = [
 
     # 3rd Party Apps
     'graphene_django',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    'graphql_auth',
+    'django_filters',
 
     # Own Apps
     'books.apps.BooksConfig',
-    'quiz.apps.QuizConfig'
+    'quiz.apps.QuizConfig',
+    'accounts.apps.AccountsConfig'
 ]
 
 MIDDLEWARE = [
@@ -107,9 +111,33 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # 'graphql_jwt.backends.JSONWebTokenBackend',
+    'graphql_auth.backends.GraphQLAuthBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
 # GraphQL Configs
 GRAPHENE = {
-    # "SCHEMA": "books.schema.schema"
+    'SCHEMA': 'quiz.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ]
+}
+
+# GraphQL JWT Configs
+GRAPHQL_JWT = {
+    'JWT_ALLOW_ANY_CLASSES': [
+        'graphql_auth.mutations.Register',
+        'graphql_auth.mutations.VerifyAccount',
+        'graphql_auth.mutations.ObtainJSONWebToken',
+        'graphql_auth.mutations.UpdateAccount',
+        'graphql_auth.mutations.ResendActivationEmail',
+        'graphql_auth.mutations.SendPasswordResetEmail',
+        'graphql_auth.mutations.PasswordReset'
+    ],
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True
 }
 
 
@@ -138,3 +166,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [
     BASE_DIR / "static_local",
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
