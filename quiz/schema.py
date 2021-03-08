@@ -38,6 +38,19 @@ class CategoryUpdateMutation(graphene.Mutation):
         return CategoryUpdateMutation(category)
 
 
+class CategoryDeleteMutation(graphene.Mutation):
+    category = graphene.Field(CategoryType)
+
+    class Arguments:
+        id = graphene.ID()
+
+    @classmethod
+    def mutate(cls, root, info, id):
+        category = Category.objects.get(id=id)
+        category.delete()
+        return
+
+
 class QuizType(DjangoObjectType):
     class Meta:
         model = Quiz
@@ -107,6 +120,7 @@ class Query(graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     add_category = CategoryCreateMutation.Field()
     update_category = CategoryUpdateMutation.Field()
+    delete_category = CategoryDeleteMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
@@ -174,5 +188,24 @@ mutation AddCategory {
   }
 }
 
+
+Query6:
+mutation UpdateCategory {
+  updateCategory (id: 3, name: "Updated+ Category") {
+    category {
+      id,
+      name
+    }
+  }
+}
+
+Query7:
+mutation DeleteCategory {
+  deleteCategory (id: 2) {
+    category {
+      id
+    }
+  }
+}
 
 """
